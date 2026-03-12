@@ -145,7 +145,7 @@ export default function App() {
             <Field label="Location *" error={errors.hotelLoc}>
               <input value={form.hotelLoc} onChange={e => set('hotelLoc', e.target.value)} placeholder="e.g. Dubai, United Arab Emirates" className={errors.hotelLoc ? 'error' : ''} />
             </Field>
-            <Field label="Confirmation Number">
+            <Field label="Supplier Reference Number">
               <input value={form.confirmNo} onChange={e => set('confirmNo', e.target.value)} placeholder="e.g. HTL-2026-00123" />
             </Field>
             <Field label="Check-In Date *" error={errors.checkIn}>
@@ -220,7 +220,7 @@ export default function App() {
               {form.children > 0 && (
                 <div className="v-field"><label>Children Age</label><span>{form.childAge || '—'}</span></div>
               )}
-              <div className="v-field"><label>Confirmation No.</label><span>{form.confirmNo || '—'}</span></div>
+              <div className="v-field"><label>Supplier Reference No.</label><span>{form.confirmNo || '—'}</span></div>
             </div>
 
             <div className="v-content">
