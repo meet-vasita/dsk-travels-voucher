@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/images/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSK Travels – Voucher Generator</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      /* Hide everything except the voucher */
+      .topbar,
+      .form-panel {
+        display: none !important;
+      }
+
+      /* Reset layout so voucher fills the page */
+      body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      .wrapper {
+        display: block !important;
+        min-height: unset !important;
+      }
+
+      .preview-area {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      /* Make the voucher fill exactly one A4 page */
+      .page {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        box-shadow: none !important;
+        position: relative !important;
+        page-break-after: always !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+      }
+
+      /* Force the left accent bar to print */
+      .page::before {
+        content: '' !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 5px !important;
+        background: linear-gradient(180deg, #E87722 0%, #1C1C1C 100%) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        z-index: 10 !important;
+      }
+
+      /* Force backgrounds & colors to print */
+      .v-title-bar {
+        background: #1C1C1C !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .v-title-bar h2 { color: #fff !important; }
+
+      .v-confirmed {
+        background: #E87722 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .v-guest-row {
+        background: #F9F9F9 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .v-room-card {
+        background: #FDF0E6 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .v-footer {
+        background: #F9F9F9 !important;
+        margin-top: auto !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .v-bottom-bar {
+        background: linear-gradient(90deg, #E87722 0%, #1C1C1C 50%) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .v-sec-label { color: #E87722 !important; }
+      .v-inc-dot   { background: #E87722 !important; }
+
+      .v-status {
+        background: #F1FAF1 !important;
+        border: 1px solid #B8DEB9 !important;
+        color: #2E7D32 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Push footer to bottom of the page */
+      .v-content {
+        flex: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

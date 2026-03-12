@@ -1,0 +1,484 @@
+/* Add at the very top of App.css */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito+Sans:wght@300;400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --orange: #E87722;
+  --orange-light: #FDF0E6;
+  --black: #1C1C1C;
+  --dark: #333;
+  --gray: #888;
+  --light: #F9F9F9;
+  --border: #E4E4E4;
+  --red: #D32F2F;
+  --red-light: #FFF0F0;
+}
+
+body {
+  font-family: 'Nunito Sans', sans-serif;
+  background: #ECECEC;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--black);
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar .brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.topbar .brand span { color: var(--orange); }
+
+.print-btn {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 20px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.print-btn:hover { background: #cf6510; }
+.print-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+.wrapper {
+  display: flex;
+  min-height: calc(100vh - 52px);
+}
+
+/* ── FORM PANEL ── */
+.form-panel {
+  width: 320px;
+  min-width: 320px;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 24px 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 52px);
+  position: sticky;
+  top: 52px;
+}
+
+.form-panel h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section { margin-bottom: 22px; }
+.form-group { margin-bottom: 12px; }
+
+.form-group label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 11px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 12px;
+  color: var(--black);
+  background: #fff;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus { border-color: var(--orange); }
+
+.form-group input.error { border-color: var(--red) !important; background: var(--red-light); }
+
+.err-msg {
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+
+.err-msg.visible { display: block; }
+
+/* Date + Nights row */
+.date-nights-row {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 8px;
+  align-items: end;
+}
+
+.nights-badge {
+  background: var(--orange-light);
+  border: 1px solid #f0c090;
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+  line-height: 1.2;
+}
+
+.nights-badge span { display: block; font-size: 9px; font-weight: 400; color: #aaa; }
+
+/* Inclusion rows */
+.inc-rows { display: flex; flex-direction: column; gap: 6px; }
+
+.inc-row { display: flex; gap: 6px; align-items: center; }
+.inc-row input { flex: 1; }
+
+.inc-remove {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 28px;
+  height: 30px;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.inc-remove:hover { border-color: #f44; color: #f44; }
+
+.add-inc-btn {
+  margin-top: 7px;
+  background: none;
+  border: 1px dashed var(--orange);
+  border-radius: 6px;
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+  width: 100%;
+  letter-spacing: 0.5px;
+}
+
+.add-inc-btn:hover { background: var(--orange-light); }
+
+/* ── PREVIEW AREA ── */
+.preview-area {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ── VOUCHER PAGE ── */
+.page {
+  width: 210mm;
+  height: 297mm;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.12);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--orange) 0%, var(--black) 100%);
+  z-index: 1;
+}
+
+.v-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 26px 36px 20px 44px;
+  border-bottom: 1px solid var(--border);
+}
+
+.v-company h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.v-company p {
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.v-logo {
+  width: 110px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.v-logo img {
+  max-width: 110px;
+  max-height: 55px;
+  object-fit: contain;
+  display: block;
+}
+
+.v-title-bar {
+  background: var(--black);
+  padding: 13px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.v-title-bar h2 {
+  font-family: 'Cormorant Garamond', serif;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.v-confirmed {
+  background: var(--orange);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.v-guest-row {
+  background: var(--light);
+  padding: 14px 44px;
+  display: flex;
+  gap: 52px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.v-field label {
+  display: block;
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--gray);
+  margin-bottom: 3px;
+}
+
+.v-field span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.v-content {
+  flex: 1;
+  padding: 20px 44px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.v-hotel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.v-hotel-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.v-hotel-loc {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 3px;
+}
+
+.v-status {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2E7D32;
+  background: #F1FAF1;
+  border: 1px solid #B8DEB9;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.v-divider { height: 1px; background: var(--border); }
+
+.v-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.v-info-cell {
+  padding: 13px 15px;
+  border-right: 1px solid var(--border);
+}
+
+.v-info-cell:last-child { border-right: none; }
+
+.v-info-cell label {
+  display: block;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--gray);
+  margin-bottom: 5px;
+}
+
+.v-info-cell .val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  display: block;
+}
+
+.v-info-cell .sub {
+  font-size: 10px;
+  color: var(--gray);
+  font-weight: 400;
+  margin-top: 2px;
+  display: block;
+}
+
+.v-sec-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.v-sec-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.v-room-card {
+  background: var(--orange-light);
+  border-left: 3px solid var(--orange);
+  border-radius: 0 6px 6px 0;
+  padding: 13px 18px;
+}
+
+.v-room-card .rname {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+
+.v-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.v-tag {
+  background: #fff;
+  border: 1px solid #DDD;
+  font-size: 9.5px;
+  color: var(--dark);
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.v-inc-list { display: flex; flex-direction: column; gap: 7px; }
+
+.v-inc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--dark);
+  line-height: 1.5;
+}
+
+.v-inc-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.v-footer {
+  border-top: 1px solid var(--border);
+  padding: 13px 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--light);
+}
+
+.v-footer .note {
+  font-size: 9px;
+  color: var(--gray);
+  line-height: 1.7;
+  max-width: 360px;
+}
+
+.v-footer .tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  color: var(--orange);
+  font-style: italic;
+}
+
+.v-bottom-bar {
+  height: 5px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--black) 50%);
+}
