@@ -3,10 +3,10 @@ import './App.css'
 import logo from './logo.png'
 
 const BOARD_SUBS = {
-  'Bed & Breakfast': 'Breakfast Included',
-  'Half Board': 'Breakfast & Dinner',
-  'Full Board': 'All Meals Included',
-  'All Inclusive': 'All Meals & Drinks',
+  'Bed & Breakfast': '',
+  'Half Board': '',
+  'Full Board': '',
+  'All Inclusive': '',
   'Room Only': ''
 }
 
@@ -145,7 +145,7 @@ export default function App() {
             <Field label="Location *" error={errors.hotelLoc}>
               <input value={form.hotelLoc} onChange={e => set('hotelLoc', e.target.value)} placeholder="e.g. Dubai, United Arab Emirates" className={errors.hotelLoc ? 'error' : ''} />
             </Field>
-            <Field label="Supplier Reference Number">
+            <Field label="Confirmation Number">
               <input value={form.confirmNo} onChange={e => set('confirmNo', e.target.value)} placeholder="e.g. HTL-2026-00123" />
             </Field>
             <Field label="Check-In Date *" error={errors.checkIn}>
@@ -220,7 +220,7 @@ export default function App() {
               {form.children > 0 && (
                 <div className="v-field"><label>Children Age</label><span>{form.childAge || '—'}</span></div>
               )}
-              <div className="v-field"><label>Supplier Reference No.</label><span>{form.confirmNo || '—'}</span></div>
+              <div className="v-field"><label>Confirmation No.</label><span>{form.confirmNo || '—'}</span></div>
             </div>
 
             <div className="v-content">
