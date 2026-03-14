@@ -220,7 +220,7 @@ export default function App() {
               {form.children > 0 && (
                 <div className="v-field"><label>Children Age</label><span>{form.childAge || '—'}</span></div>
               )}
-              <div className="v-field"><label>Confirmation No.</label><span>{form.confirmNo || '—'}</span></div>
+              <div className="v-field"><label>Supplier Reference No.</label><span>{form.confirmNo || '—'}</span></div>
             </div>
 
             <div className="v-content">
