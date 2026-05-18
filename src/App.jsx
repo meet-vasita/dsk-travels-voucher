@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import './App.css'
 import logo from './logo.png'
 
@@ -11,6 +11,12 @@ const BOARD_SUBS = {
 }
 
 function formatDate(val) {
+  if (!val) return '—'
+  const d = new Date(val + 'T00:00:00')
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function formatDateShort(val) {
   if (!val) return '—'
   const d = new Date(val + 'T00:00:00')
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -30,37 +36,38 @@ function toInputDate(date) {
   return `${y}-${m}-${d}`
 }
 
+function todayInputDate() {
+  return toInputDate(new Date())
+}
+
 export default function App() {
   const [form, setForm] = useState({
     guestName: '', adults: 2, children: 0, childAge: '',
     hotelName: '', hotelLoc: '',
+    bookingDate: todayInputDate(),
     checkIn: '', checkOut: '', nights: '',
     boardBasis: 'Half Board', roomType: '',
-    confirmNo: ''
+    confirmNo: '',
+    emergencyNo: '+971 50 841 6669'
   })
   const [inclusions, setInclusions] = useState([''])
   const [errors, setErrors] = useState({})
 
   const set = (key, value) => setForm(f => ({ ...f, [key]: value }))
 
-  // Sync: check-in changed
   const handleCheckInChange = (val) => {
     const nights = parseInt(form.nights)
-    let newCheckOut = form.checkOut
     if (val && nights > 0) {
       const d = new Date(val + 'T00:00:00')
       d.setDate(d.getDate() + nights)
-      newCheckOut = toInputDate(d)
+      setForm(f => ({ ...f, checkIn: val, checkOut: toInputDate(d) }))
     } else {
       const n = diffNights(val, form.checkOut)
-      if (n) setForm(f => ({ ...f, checkIn: val, nights: n, checkOut: form.checkOut }))
+      if (n) setForm(f => ({ ...f, checkIn: val, nights: n }))
       else setForm(f => ({ ...f, checkIn: val }))
-      return
     }
-    setForm(f => ({ ...f, checkIn: val, checkOut: newCheckOut }))
   }
 
-  // Sync: nights changed
   const handleNightsChange = (val) => {
     const nights = parseInt(val)
     if (!form.checkIn) { setErrors(e => ({ ...e, checkIn: 'Please enter check-in date first.' })); return }
@@ -70,7 +77,6 @@ export default function App() {
     setForm(f => ({ ...f, nights: val, checkOut: toInputDate(d) }))
   }
 
-  // Sync: check-out changed
   const handleCheckOutChange = (val) => {
     if (!form.checkIn) { setErrors(e => ({ ...e, checkIn: 'Please enter check-in date first.' })); return }
     const n = diffNights(form.checkIn, val)
@@ -107,17 +113,14 @@ export default function App() {
 
   return (
     <>
-      {/* Topbar */}
       <div className="topbar">
-        <div className="brand">DSK <span>Travels</span> LLC &nbsp;·&nbsp; Voucher Generator</div>
-        <button className="print-btn" onClick={handlePrint}>🖨 Print Voucher</button>
+        <div className="brand">DSK <span>Travels</span> LLC &nbsp;&middot;&nbsp; Voucher Generator</div>
+        <button className="print-btn" onClick={handlePrint}>Print Voucher</button>
       </div>
 
       <div className="wrapper">
         {/* Form Panel */}
         <div className="form-panel">
-
-          {/* Guest Info */}
           <div className="form-section">
             <h3>Guest Information</h3>
             <Field label="Guest Name *" error={errors.guestName}>
@@ -136,7 +139,6 @@ export default function App() {
             )}
           </div>
 
-          {/* Hotel Info */}
           <div className="form-section">
             <h3>Hotel Details</h3>
             <Field label="Hotel Name *" error={errors.hotelName}>
@@ -148,10 +150,13 @@ export default function App() {
             <Field label="Confirmation Number">
               <input value={form.confirmNo} onChange={e => set('confirmNo', e.target.value)} placeholder="e.g. HTL-2026-00123" />
             </Field>
+            <Field label="Booking Date">
+              <input type="date" value={form.bookingDate} onChange={e => set('bookingDate', e.target.value)} />
+            </Field>
             <Field label="Check-In Date *" error={errors.checkIn}>
               <input type="date" value={form.checkIn} onChange={e => handleCheckInChange(e.target.value)} className={errors.checkIn ? 'error' : ''} />
             </Field>
-            <Field label="Nights *" error={errors.nights}>
+            <Field label="Number of Nights *" error={errors.nights}>
               <div className="date-nights-row">
                 <input type="number" value={form.nights} min="1" max="365" placeholder="No. of nights" onChange={e => handleNightsChange(e.target.value)} className={errors.nights ? 'error' : ''} />
                 <div className="nights-badge">
@@ -169,7 +174,6 @@ export default function App() {
             </Field>
           </div>
 
-          {/* Room */}
           <div className="form-section">
             <h3>Room Details</h3>
             <Field label="Room Type *" error={errors.roomType}>
@@ -177,7 +181,6 @@ export default function App() {
             </Field>
           </div>
 
-          {/* Inclusions */}
           <div className="form-section">
             <h3>Special Inclusions</h3>
             <div className="inc-rows">
@@ -188,21 +191,32 @@ export default function App() {
                     placeholder="If any inclusions type here"
                     onChange={e => { const a = [...inclusions]; a[i] = e.target.value; setInclusions(a) }}
                   />
-                  <button className="inc-remove" onClick={() => setInclusions(inclusions.filter((_, j) => j !== i))}>×</button>
+                  <button className="inc-remove" onClick={() => setInclusions(inclusions.filter((_, j) => j !== i))}>&#215;</button>
                 </div>
               ))}
             </div>
             <button className="add-inc-btn" onClick={() => setInclusions([...inclusions, ''])}>+ Add Inclusion</button>
+          </div>
+
+          <div className="form-section">
+            <h3>Emergency Contact</h3>
+            <Field label="Emergency Number">
+              <input value={form.emergencyNo} onChange={e => set('emergencyNo', e.target.value)} placeholder="+971 50 841 6669" />
+            </Field>
           </div>
         </div>
 
         {/* Voucher Preview */}
         <div className="preview-area">
           <div className="page" id="voucher">
+
+            {/* Decorative top accent line */}
+            <div className="v-accent-top" />
+
             <div className="v-header">
               <div className="v-company">
                 <h1>DSK Travels LLC</h1>
-                <p>Travel to live, live to travel</p>
+                <p>Travel to live &nbsp;&bull;&nbsp; Live to travel</p>
               </div>
               <div className="v-logo">
                 <img src={logo} alt="DSK Travels Logo" />
@@ -210,17 +224,40 @@ export default function App() {
             </div>
 
             <div className="v-title-bar">
-              <h2>Hotel Booking Voucher</h2>
-              <div className="v-confirmed">✓ Confirmed</div>
+              <div className="v-title-left">
+                <div className="v-title-rule" />
+                <h2>Hotel Booking Voucher</h2>
+              </div>
+              <div className="v-confirmed">Confirmed</div>
             </div>
 
             <div className="v-guest-row">
-              <div className="v-field"><label>Guest Name</label><span>{form.guestName || '—'}</span></div>
-              <div className="v-field"><label>Occupancy</label><span>{occ}</span></div>
+              <div className="v-field">
+                <label>Guest Name</label>
+                <span>{form.guestName || '—'}</span>
+              </div>
+              <div className="v-field">
+                <label>Occupancy</label>
+                <span>{occ}</span>
+              </div>
               {form.children > 0 && (
-                <div className="v-field"><label>Children Age</label><span>{form.childAge || '—'}</span></div>
+                <div className="v-field">
+                  <label>Children Age</label>
+                  <span>{form.childAge || '—'}</span>
+                </div>
               )}
-              <div className="v-field"><label>Supplier Reference No.</label><span>{form.confirmNo || '—'}</span></div>
+              {form.confirmNo && (
+                <div className="v-field">
+                  <label>Supplier Reference No.</label>
+                  <span>{form.confirmNo}</span>
+                </div>
+              )}
+              {form.bookingDate && (
+                <div className="v-field">
+                  <label>Booking Date</label>
+                  <span>{formatDateShort(form.bookingDate)}</span>
+                </div>
+              )}
             </div>
 
             <div className="v-content">
@@ -229,35 +266,37 @@ export default function App() {
                   <div className="v-hotel-name">{form.hotelName || '—'}</div>
                   <div className="v-hotel-loc">{form.hotelLoc || '—'}</div>
                 </div>
-                <div className="v-status">✓ Confirmed</div>
               </div>
 
               <div className="v-divider" />
 
               <div className="v-info-grid">
-                <div className="v-info-cell"><label>Check-In</label><span className="val">{formatDate(form.checkIn)}</span></div>
-                <div className="v-info-cell"><label>Check-Out</label><span className="val">{formatDate(form.checkOut)}</span></div>
-                <div className="v-info-cell"><label>Duration</label><span className="val">{nights ? `${nights} Night${nights !== 1 ? 's' : ''}` : '—'}</span></div>
+                <div className="v-info-cell">
+                  <label>Check-In</label>
+                  <span className="val">{formatDate(form.checkIn)}</span>
+                </div>
+                <div className="v-info-cell">
+                  <label>Check-Out</label>
+                  <span className="val">{formatDate(form.checkOut)}</span>
+                </div>
+                <div className="v-info-cell">
+                  <label>Number of Nights</label>
+                  <span className="val">{nights ? `${nights} Night${nights !== 1 ? 's' : ''}` : '—'}</span>
+                </div>
                 <div className="v-info-cell">
                   <label>Board Basis</label>
                   <span className="val">{board}</span>
-                  <span className="sub">{BOARD_SUBS[board]}</span>
                 </div>
               </div>
 
               <div className="v-sec-label">Room Details</div>
               <div className="v-room-card">
                 <div className="rname">{form.roomType || '—'}</div>
-                <div className="v-tags">
-                  {form.roomType && <span className="v-tag">{form.roomType}</span>}
-                  <span className="v-tag">{occ}</span>
-                  {BOARD_SUBS[board] && <span className="v-tag">{BOARD_SUBS[board]}</span>}
-                </div>
               </div>
 
               {activeInclusions.length > 0 && (
                 <div>
-                  <div className="v-sec-label" style={{ marginBottom: '10px' }}>Special Inclusions</div>
+                  <div className="v-sec-label">Special Inclusions</div>
                   <div className="v-inc-list">
                     {activeInclusions.map((inc, i) => (
                       <div className="v-inc-item" key={i}>
@@ -268,10 +307,35 @@ export default function App() {
                   </div>
                 </div>
               )}
+
+              {/* Important Note Section */}
+              <div className="v-sec-label">Important Note</div>
+              <div className="v-notes-list">
+                <div className="v-note-item">
+                  <div className="v-note-dot" />
+                  <span>Standard hotel check-in time is 15:00 hrs and check-out time is 12:00 hrs; in case of an early arrival before the check-in time, rooms must be booked from the previous night with the corresponding charges in order to guarantee an early check-in.</span>
+                </div>
+                <div className="v-note-item">
+                  <div className="v-note-dot" />
+                  <span>Free early check-in and late check-out is subject to availability and as per the hotel's policy.</span>
+                </div>
+                <div className="v-note-item">
+                  <div className="v-note-dot" />
+                  <span>Hotel reserves the rights to cancel the rooms booking automatically after 18:00 hours, if hotel is not informed about the late arrivals. In case of late check-in, kindly inform us in advance.</span>
+                </div>
+                <div className="v-note-item">
+                  <div className="v-note-dot" />
+                  <span>In case of no show or early check out, 100% charges will apply — no part/full refund will be honored.</span>
+                </div>
+                <div className="v-note-item">
+                  <div className="v-note-dot" />
+                  <span>For any assistance during or after your tour please contact our emergency number: <strong>{form.emergencyNo || '+971 50 841 6669'}</strong></span>
+                </div>
+              </div>
             </div>
 
             <div className="v-footer">
-              <div className="note">This voucher is issued by DSK Travels LLC and is subject to the hotel's terms & conditions. Please present this voucher upon check-in. For assistance, contact your travel consultant.</div>
+              <div className="note">This voucher is issued by DSK Travels LLC and is subject to the hotel's terms and conditions. Please present this voucher upon check-in. For assistance, contact your travel consultant.</div>
               <div className="tagline">...travel to live, live to travel!</div>
             </div>
             <div className="v-bottom-bar" />
@@ -282,7 +346,6 @@ export default function App() {
   )
 }
 
-// Reusable field component
 function Field({ label, error, children }) {
   return (
     <div className="form-group">
