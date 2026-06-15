@@ -152,6 +152,46 @@ body {
 
 .nights-badge span { display: block; font-size: 8px; font-weight: 400; color: #bbb; }
 
+/* ── GUEST BLOCKS ── */
+.guest-block {
+  margin-bottom: 10px;
+}
+
+.guest-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.guest-block-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--orange-mid);
+}
+
+.remove-block-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 9px;
+  color: #bbb;
+  padding: 3px 8px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+.remove-block-btn:hover { border-color: #e55; color: #e55; }
+
+.guest-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0 12px;
+}
+
+/* ── INCLUSIONS ── */
 .inc-rows { display: flex; flex-direction: column; gap: 5px; }
 .inc-row { display: flex; gap: 5px; align-items: center; }
 .inc-row input { flex: 1; }
@@ -204,7 +244,7 @@ body {
 .page {
   width: 210mm;
   min-height: 297mm;
-  height: 297mm;
+  height: auto;
   background: var(--cream);
   display: flex;
   flex-direction: column;
@@ -319,6 +359,18 @@ body {
   border-radius: 1px;
 }
 
+/* ── META ROW (ref + booking date, above guests) ── */
+.v-meta-row {
+  background: var(--cream);
+  padding: 10px 40px 10px 46px;
+  display: flex;
+  gap: 44px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
 /* ── GUEST ROW ── */
 .v-guest-row {
   background: var(--light);
@@ -330,6 +382,26 @@ body {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
+  align-items: center;
+}
+
+.v-guest-row--extra {
+  background: #EFEDE9;
+  border-bottom: 1px dashed var(--border-strong);
+}
+
+.v-guest-index {
+  font-size: 7.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--orange);
+  background: var(--orange-light);
+  border: 1px solid #DEB88A;
+  border-radius: 2px;
+  padding: 2px 8px;
+  align-self: center;
+  white-space: nowrap;
 }
 
 .v-field label {
@@ -351,13 +423,12 @@ body {
 /* ── CONTENT ── */
 .v-content {
   flex: 1;
-  padding: 18px 40px 16px 46px;
+  padding: 16px 40px 14px 46px;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 11px;
   position: relative;
   z-index: 1;
-  overflow: hidden;
 }
 
 .v-hotel-row {
@@ -455,7 +526,10 @@ body {
   border: 1px solid var(--border);
   border-left: 3px solid var(--orange-mid);
   border-radius: 0 3px 3px 0;
-  padding: 12px 18px;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .v-room-card .rname {
@@ -466,8 +540,29 @@ body {
   letter-spacing: 0.2px;
 }
 
+.v-room-card .runits {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--orange);
+  background: var(--orange-light);
+  border: 1px solid #DEB88A;
+  border-radius: 2px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.v-total-units {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--gray);
+  text-align: right;
+  letter-spacing: 0.5px;
+  margin-top: -4px;
+}
+
 /* ── INCLUSIONS ── */
-.v-inc-list { display: flex; flex-direction: column; gap: 6px; }
+.v-inc-list { display: flex; flex-direction: column; gap: 5px; }
 
 .v-inc-item {
   display: flex;
@@ -487,16 +582,16 @@ body {
   flex-shrink: 0;
 }
 
-/* ── IMPORTANT NOTES ── */
+/* ── IMPORTANT NOTES — increased font size ── */
 .v-notes-list { display: flex; flex-direction: column; gap: 5px; }
 
 .v-note-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 9px;
-  color: #666;
-  line-height: 1.6;
+  font-size: 10.5px;   /* was 9px — increased for legibility */
+  color: #555;
+  line-height: 1.65;
 }
 
 .v-note-item strong {
@@ -509,7 +604,7 @@ body {
   height: 4px;
   border-radius: 50%;
   background: var(--orange);
-  margin-top: 6px;
+  margin-top: 7px;
   flex-shrink: 0;
 }
 
@@ -573,18 +668,12 @@ body {
 
   .page {
     width: 210mm !important;
-    height: 297mm !important;
     min-height: 297mm !important;
     box-shadow: none !important;
     page-break-after: always !important;
     background: #FDFAF7 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-  }
-
-  .page::after {
-    display: none !important;
-    content: none !important;
   }
 
   .page::before {
@@ -613,9 +702,23 @@ body {
     print-color-adjust: exact !important;
   }
 
+  .v-guest-row--extra {
+    background: #EFEDE9 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .v-room-card {
     background: #fff !important;
     border-left: 3px solid #C8601A !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .v-room-card .runits {
+    background: #FBF0E6 !important;
+    border: 1px solid #DEB88A !important;
+    color: #C8601A !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -641,4 +744,12 @@ body {
   .v-sec-label { color: #C8601A !important; }
   .v-inc-dot, .v-note-dot { background: #C8601A !important; }
   .v-footer .tagline { color: #C8601A !important; }
+
+  .v-guest-index {
+    background: #FBF0E6 !important;
+    border: 1px solid #DEB88A !important;
+    color: #C8601A !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

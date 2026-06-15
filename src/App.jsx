@@ -40,13 +40,17 @@ function todayInputDate() {
   return toInputDate(new Date())
 }
 
+const defaultGuest = () => ({ guestName: '', adults: 2, children: 0, childAge: '' })
+const defaultRoom = () => ({ roomType: '', units: 1 })
+
 export default function App() {
+  const [guests, setGuests] = useState([defaultGuest()])
+  const [rooms, setRooms] = useState([defaultRoom()])
   const [form, setForm] = useState({
-    guestName: '', adults: 2, children: 0, childAge: '',
     hotelName: '', hotelLoc: '',
     bookingDate: todayInputDate(),
     checkIn: '', checkOut: '', nights: '',
-    boardBasis: 'Half Board', roomType: '',
+    boardBasis: 'Half Board',
     confirmNo: '',
     emergencyNo: '+971 50 841 6669'
   })
@@ -54,6 +58,16 @@ export default function App() {
   const [errors, setErrors] = useState({})
 
   const set = (key, value) => setForm(f => ({ ...f, [key]: value }))
+
+  // Guest helpers
+  const setGuest = (i, key, value) => setGuests(gs => gs.map((g, idx) => idx === i ? { ...g, [key]: value } : g))
+  const addGuest = () => setGuests(gs => [...gs, defaultGuest()])
+  const removeGuest = (i) => setGuests(gs => gs.filter((_, idx) => idx !== i))
+
+  // Room helpers
+  const setRoom = (i, key, value) => setRooms(rs => rs.map((r, idx) => idx === i ? { ...r, [key]: value } : r))
+  const addRoom = () => setRooms(rs => [...rs, defaultRoom()])
+  const removeRoom = (i) => setRooms(rs => rs.filter((_, idx) => idx !== i))
 
   const handleCheckInChange = (val) => {
     const nights = parseInt(form.nights)
@@ -87,16 +101,15 @@ export default function App() {
 
   const validate = () => {
     const e = {}
-    if (!form.guestName.trim()) e.guestName = 'Guest name is required.'
-    if (!form.adults || form.adults < 1) e.adults = 'At least 1 adult is required.'
-    if (form.children < 0) e.children = 'Invalid number of children.'
+    if (!guests[0].guestName.trim()) e.guestName0 = 'Guest name is required.'
+    if (!guests[0].adults || guests[0].adults < 1) e.adults0 = 'At least 1 adult is required.'
     if (!form.hotelName.trim()) e.hotelName = 'Hotel name is required.'
     if (!form.hotelLoc.trim()) e.hotelLoc = 'Location is required.'
     if (!form.checkIn) e.checkIn = 'Check-in date is required.'
     if (!form.checkOut) e.checkOut = 'Check-out date is required.'
     else if (form.checkIn && !diffNights(form.checkIn, form.checkOut)) e.checkOut = 'Check-out must be after check-in.'
     if (!form.nights || form.nights < 1) e.nights = 'Please enter a valid number of nights.'
-    if (!form.roomType.trim()) e.roomType = 'Room type is required.'
+    if (!rooms[0].roomType.trim()) e.roomType0 = 'Room type is required.'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -107,9 +120,11 @@ export default function App() {
   }
 
   const nights = diffNights(form.checkIn, form.checkOut)
-  const occ = `${form.adults} Adult${form.adults !== 1 ? 's' : ''}${form.children > 0 ? `, ${form.children} Child${form.children !== 1 ? 'ren' : ''}` : ''}`
   const activeInclusions = inclusions.filter(i => i.trim())
   const board = form.boardBasis
+
+  // Total units across all room entries
+  const totalUnits = rooms.reduce((sum, r) => sum + (parseInt(r.units) || 1), 0)
 
   return (
     <>
@@ -121,24 +136,39 @@ export default function App() {
       <div className="wrapper">
         {/* Form Panel */}
         <div className="form-panel">
+
+          {/* GUESTS */}
           <div className="form-section">
             <h3>Guest Information</h3>
-            <Field label="Guest Name *" error={errors.guestName}>
-              <input value={form.guestName} onChange={e => set('guestName', e.target.value)} placeholder="Kirti Tandon" className={errors.guestName ? 'error' : ''} />
-            </Field>
-            <Field label="Adults *" error={errors.adults}>
-              <input type="number" value={form.adults} min="1" max="20" onChange={e => set('adults', parseInt(e.target.value))} className={errors.adults ? 'error' : ''} />
-            </Field>
-            <Field label="Children" error={errors.children}>
-              <input type="number" value={form.children} min="0" max="20" onChange={e => set('children', parseInt(e.target.value) || 0)} />
-            </Field>
-            {form.children > 0 && (
-              <Field label="Children Age">
-                <input value={form.childAge} onChange={e => set('childAge', e.target.value)} placeholder="e.g. Below 12 Years" />
-              </Field>
-            )}
+            {guests.map((g, i) => (
+              <div key={i} className="guest-block">
+                {guests.length > 1 && (
+                  <div className="guest-block-header">
+                    <span className="guest-block-label">Guest {i + 1}</span>
+                    <button className="remove-block-btn" onClick={() => removeGuest(i)}>&#215; Remove</button>
+                  </div>
+                )}
+                <Field label="Guest Name *" error={errors[`guestName${i}`]}>
+                  <input value={g.guestName} onChange={e => setGuest(i, 'guestName', e.target.value)} placeholder="e.g. Kirti Tandon" className={errors[`guestName${i}`] ? 'error' : ''} />
+                </Field>
+                <Field label="Adults *" error={errors[`adults${i}`]}>
+                  <input type="number" value={g.adults} min="1" max="20" onChange={e => setGuest(i, 'adults', parseInt(e.target.value))} className={errors[`adults${i}`] ? 'error' : ''} />
+                </Field>
+                <Field label="Children">
+                  <input type="number" value={g.children} min="0" max="20" onChange={e => setGuest(i, 'children', parseInt(e.target.value) || 0)} />
+                </Field>
+                {g.children > 0 && (
+                  <Field label="Children Age">
+                    <input value={g.childAge} onChange={e => setGuest(i, 'childAge', e.target.value)} placeholder="e.g. Below 12 Years" />
+                  </Field>
+                )}
+                {i < guests.length - 1 && <div className="guest-divider" />}
+              </div>
+            ))}
+            <button className="add-inc-btn" onClick={addGuest}>+ Add Another Guest</button>
           </div>
 
+          {/* HOTEL */}
           <div className="form-section">
             <h3>Hotel Details</h3>
             <Field label="Hotel Name *" error={errors.hotelName}>
@@ -174,13 +204,30 @@ export default function App() {
             </Field>
           </div>
 
+          {/* ROOMS */}
           <div className="form-section">
             <h3>Room Details</h3>
-            <Field label="Room Type *" error={errors.roomType}>
-              <input value={form.roomType} onChange={e => set('roomType', e.target.value)} placeholder="e.g. Superior Family Room" className={errors.roomType ? 'error' : ''} />
-            </Field>
+            {rooms.map((r, i) => (
+              <div key={i} className="guest-block">
+                {rooms.length > 1 && (
+                  <div className="guest-block-header">
+                    <span className="guest-block-label">Room Entry {i + 1}</span>
+                    <button className="remove-block-btn" onClick={() => removeRoom(i)}>&#215; Remove</button>
+                  </div>
+                )}
+                <Field label="Room Type *" error={errors[`roomType${i}`]}>
+                  <input value={r.roomType} onChange={e => setRoom(i, 'roomType', e.target.value)} placeholder="e.g. Superior Family Room" className={errors[`roomType${i}`] ? 'error' : ''} />
+                </Field>
+                <Field label="Number of Units">
+                  <input type="number" value={r.units} min="1" max="50" onChange={e => setRoom(i, 'units', parseInt(e.target.value) || 1)} placeholder="1" />
+                </Field>
+                {i < rooms.length - 1 && <div className="guest-divider" />}
+              </div>
+            ))}
+            <button className="add-inc-btn" onClick={addRoom}>+ Add Another Room Type</button>
           </div>
 
+          {/* INCLUSIONS */}
           <div className="form-section">
             <h3>Special Inclusions</h3>
             <div className="inc-rows">
@@ -198,6 +245,7 @@ export default function App() {
             <button className="add-inc-btn" onClick={() => setInclusions([...inclusions, ''])}>+ Add Inclusion</button>
           </div>
 
+          {/* EMERGENCY */}
           <div className="form-section">
             <h3>Emergency Contact</h3>
             <Field label="Emergency Number">
@@ -210,7 +258,6 @@ export default function App() {
         <div className="preview-area">
           <div className="page" id="voucher">
 
-            {/* Decorative top accent line */}
             <div className="v-accent-top" />
 
             <div className="v-header">
@@ -231,34 +278,49 @@ export default function App() {
               <div className="v-confirmed">Confirmed</div>
             </div>
 
-            <div className="v-guest-row">
-              <div className="v-field">
-                <label>Guest Name</label>
-                <span>{form.guestName || '—'}</span>
+            {/* Single header row: ref + booking date */}
+            {(form.confirmNo || form.bookingDate) && (
+              <div className="v-meta-row">
+                {form.confirmNo && (
+                  <div className="v-field">
+                    <label>Supplier Ref. No.</label>
+                    <span>{form.confirmNo}</span>
+                  </div>
+                )}
+                {form.bookingDate && (
+                  <div className="v-field">
+                    <label>Booking Date</label>
+                    <span>{formatDateShort(form.bookingDate)}</span>
+                  </div>
+                )}
               </div>
-              <div className="v-field">
-                <label>Occupancy</label>
-                <span>{occ}</span>
-              </div>
-              {form.children > 0 && (
-                <div className="v-field">
-                  <label>Children Age</label>
-                  <span>{form.childAge || '—'}</span>
+            )}
+
+            {/* Guest rows — one per guest */}
+            {guests.map((g, i) => {
+              const occ = `${g.adults} Adult${g.adults !== 1 ? 's' : ''}${g.children > 0 ? `, ${g.children} Child${g.children !== 1 ? 'ren' : ''}` : ''}`
+              return (
+                <div className={`v-guest-row${i > 0 ? ' v-guest-row--extra' : ''}`} key={i}>
+                  {guests.length > 1 && (
+                    <div className="v-guest-index">Guest {i + 1}</div>
+                  )}
+                  <div className="v-field">
+                    <label>Guest Name</label>
+                    <span>{g.guestName || '—'}</span>
+                  </div>
+                  <div className="v-field">
+                    <label>Occupancy</label>
+                    <span>{occ}</span>
+                  </div>
+                  {g.children > 0 && (
+                    <div className="v-field">
+                      <label>Children Age</label>
+                      <span>{g.childAge || '—'}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {form.confirmNo && (
-                <div className="v-field">
-                  <label>Supplier Reference No.</label>
-                  <span>{form.confirmNo}</span>
-                </div>
-              )}
-              {form.bookingDate && (
-                <div className="v-field">
-                  <label>Booking Date</label>
-                  <span>{formatDateShort(form.bookingDate)}</span>
-                </div>
-              )}
-            </div>
+              )
+            })}
 
             <div className="v-content">
               <div className="v-hotel-row">
@@ -289,10 +351,17 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Room details — one card per room entry */}
               <div className="v-sec-label">Room Details</div>
-              <div className="v-room-card">
-                <div className="rname">{form.roomType || '—'}</div>
-              </div>
+              {rooms.map((r, i) => (
+                <div className="v-room-card" key={i}>
+                  <div className="rname">{r.roomType || '—'}</div>
+                  <div className="runits">{(parseInt(r.units) || 1)} Unit{(parseInt(r.units) || 1) !== 1 ? 's' : ''}</div>
+                </div>
+              ))}
+              {totalUnits > 1 && (
+                <div className="v-total-units">Total: {totalUnits} Room Unit{totalUnits !== 1 ? 's' : ''}</div>
+              )}
 
               {activeInclusions.length > 0 && (
                 <div>
@@ -308,7 +377,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* Important Note Section */}
               <div className="v-sec-label">Important Note</div>
               <div className="v-notes-list">
                 <div className="v-note-item">
